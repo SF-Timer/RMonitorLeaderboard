@@ -18,16 +18,43 @@ public class LeaderBoardTableCellRenderer extends DefaultTableCellRenderer
 	{
 		Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 		Duration fastestLap = Competitor.getFastestLap();
+		String columnName = table.getColumnName(column);
+		Boolean isLastTime = false;
+		Boolean isBestTime = false;
+		int numberColumnNumber = 2;
 		// TODO: This breaks if you reorder columns!!! Need to figure out how to do this with rowSorter and getModel
-		Duration competitorBestLap = Competitor.getInstance((String) table.getValueAt(row, 2)).getBestLap();
+		Competitor competitor;
 		
-		if (column == 8 && value.equals(fastestLap)) {
+		for(int i=0;i<table.getColumnCount();i++) {
+			if(((String)table.getColumnName(i)).compareTo("#") == 0) {
+				numberColumnNumber = i;
+			}
+		}
+		try {
+			competitor = Competitor.getInstance((String) table.getValueAt(row, numberColumnNumber));
+		}
+		catch (Exception eee) {
+			return c;
+		}
+		
+		if(competitor == null) {
+			return c;
+		}
+		Duration competitorBestLap = competitor.getBestLap();
+		
+		if(columnName.compareTo("Last Time") == 0){
+			isLastTime = true;
+		}
+		if(columnName.compareTo("Best Time") == 0){
+			isBestTime = true;
+		}
+		if (isBestTime && value.equals(fastestLap)) {
 			c.setBackground(new Color(150, 0, 150));
 			c.setForeground(new Color(255, 255, 255));
-		} else if (column == 7 && value.equals(fastestLap)) {
+		} else if (isLastTime && value.equals(fastestLap)) {
 			c.setBackground(new Color(150, 0, 150));
 			c.setForeground(new Color(255, 255, 255));
-		} else if (column == 7 && value.equals(competitorBestLap)) {
+		} else if (isLastTime && value.equals(competitorBestLap)) {
 			c.setBackground(new Color(0, 150, 0));
 			c.setForeground(new Color(255, 255, 255));
 		} else {
