@@ -264,11 +264,11 @@ public class Competitor
 		this.setLastName(message.getLastName());
 		this.setClassId(message.getClassId());
 
-		if (!"".equals(message.getNationality())) {
+		if (message.getNationality() != null && !message.getNationality().isEmpty()) {
 			this.setNationality(message.getNationality());
 		}
 
-		if (!"".equals(message.getAddInfo())) {
+		if (message.getAddInfo() != null && !message.getAddInfo().isEmpty()) {
 			this.setAddData(message.getAddInfo());
 		}
 	}
