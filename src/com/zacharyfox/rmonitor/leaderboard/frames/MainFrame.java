@@ -19,6 +19,7 @@ import java.beans.PropertyChangeListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
+import javax.swing.BoxLayout;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -33,6 +34,7 @@ import javax.swing.UIManager;
 
 import net.miginfocom.swing.MigLayout;
 
+//import com.zacharyfox.rmonitor.entities.Competitor;
 import com.zacharyfox.rmonitor.entities.Race;
 import com.zacharyfox.rmonitor.leaderboard.LeaderBoardMenuBar;
 import com.zacharyfox.rmonitor.leaderboard.LeaderBoardTable;
@@ -53,6 +55,7 @@ public class MainFrame extends JFrame implements ActionListener
 	private final JPanel flagColor_4;
 	private final JLabel lblNewLabel_1;
 	private final JLabel lblNewLabel_2;
+	private final JLabel lblNewLabel_3;
 	private final LeaderBoardTable leaderBoardTable;
 	private final LeaderBoardMenuBar menuBar;
 	private Race race;
@@ -63,8 +66,12 @@ public class MainFrame extends JFrame implements ActionListener
 	private final JSeparator separator;
 	private final JPanel timeBar;
 	private final JLabel timeToGo;
+	private final JLabel lapsToGo;
 	private final JPanel titleBar;
 	private final JLabel trackName;
+	private final JLabel trackLength;
+	private final JPanel trackInfo;
+	private final JLabel timeOfDay;
 	private Worker worker;
 
 	private static final long serialVersionUID = -743830529485841322L;
@@ -81,14 +88,29 @@ public class MainFrame extends JFrame implements ActionListener
 		titleBar.setLayout(new GridLayout(1, 0, 0, 0));
 
 		runName = new JLabel("-");
-		runName.setFont(new Font(systemLabelFont.getName(), Font.BOLD, systemLabelFont.getSize() + 3));
+		runName.setFont(new Font(systemLabelFont.getName(), Font.BOLD, systemLabelFont.getSize() + 15));
 		titleBar.add(runName);
 
+		timeOfDay = new JLabel("-");
+		timeOfDay.setFont(new Font(systemLabelFont.getName(), Font.BOLD, systemLabelFont.getSize() + 15));
+		titleBar.add(timeOfDay);
+		
+		trackInfo = new JPanel();
+		trackInfo.setLayout(new BoxLayout(trackInfo, BoxLayout.PAGE_AXIS));
+		titleBar.add(trackInfo);
+		
 		trackName = new JLabel("-");
-		trackName.setFont(new Font(systemLabelFont.getName(), Font.BOLD, systemLabelFont.getSize() + 3));
+		trackName.setFont(new Font(systemLabelFont.getName(), Font.BOLD, systemLabelFont.getSize() + 15));
 		trackName.setHorizontalAlignment(SwingConstants.RIGHT);
-		titleBar.add(trackName);
-
+		trackName.setAlignmentX(1);
+		trackInfo.add(trackName);
+		
+		trackLength = new JLabel("-");
+		trackLength.setFont(new Font(systemLabelFont.getName(), Font.PLAIN, systemLabelFont.getSize() + 5));
+		trackLength.setHorizontalAlignment(SwingConstants.RIGHT);
+		trackLength.setAlignmentX(1);
+		trackInfo.add(trackLength);
+				
 		separator = new JSeparator();
 		separator.setForeground(Color.BLACK);
 		separator.setBorder(null);
@@ -129,23 +151,33 @@ public class MainFrame extends JFrame implements ActionListener
 		lblNewLabel_1.setHorizontalAlignment(SwingConstants.RIGHT);
 		timeBar.add(lblNewLabel_1, "cell 2 0");
 
-		lblNewLabel_2 = new JLabel("To Go:");
+		lblNewLabel_2 = new JLabel("Time To Go:");
 		lblNewLabel_2.setHorizontalAlignment(SwingConstants.RIGHT);
 		timeBar.add(lblNewLabel_2, "cell 3 0");
 
+		lblNewLabel_3 = new JLabel("Laps To Go:");
+		lblNewLabel_3.setHorizontalAlignment(SwingConstants.RIGHT);
+		timeBar.add(lblNewLabel_3, "cell 4 0");
+
 		elapsedTime = new JLabel(new Duration().toString());
 		elapsedTime.setHorizontalAlignment(SwingConstants.RIGHT);
-		elapsedTime.setFont(new Font(systemLabelFont.getName(), Font.BOLD, systemLabelFont.getSize() + 3));
+		elapsedTime.setFont(new Font(systemLabelFont.getName(), Font.BOLD, systemLabelFont.getSize() + 15));
 		timeBar.add(elapsedTime, "cell 2 1");
 
 		timeToGo = new JLabel(new Duration().toString());
 		timeToGo.setHorizontalAlignment(SwingConstants.RIGHT);
-		timeToGo.setFont(new Font(systemLabelFont.getName(), Font.BOLD, systemLabelFont.getSize() + 3));
+		timeToGo.setFont(new Font(systemLabelFont.getName(), Font.BOLD, systemLabelFont.getSize() + 15));
 		timeBar.add(timeToGo, "cell 3 1");
+		
+		lapsToGo = new JLabel("-");
+		lapsToGo.setFont(new Font(systemLabelFont.getName(), Font.BOLD, systemLabelFont.getSize() + 15));
+		lapsToGo.setHorizontalAlignment(SwingConstants.RIGHT);
+		timeBar.add(lapsToGo);
 
 		resultsTablePanel = new JPanel();
 		getContentPane().add(resultsTablePanel, "cell 0 4 2 1,grow");
 		resultsTablePanel.setLayout(new GridLayout(1, 0, 0, 0));
+		resultsTablePanel.setFont(new Font(systemLabelFont.getName(), Font.BOLD, systemLabelFont.getSize() + 15));
 
 		resultsScrollPane = new JScrollPane();
 		resultsTablePanel.add(resultsScrollPane);
@@ -303,12 +335,37 @@ public class MainFrame extends JFrame implements ActionListener
 			elapsedTime.setText(((Duration) evt.getNewValue()).toString());
 		}
 
+		if (evt.getPropertyName().equals("timeOfDay")) {
+			timeOfDay.setText(((Duration) evt.getNewValue()).toString());
+		}
+
 		if (evt.getPropertyName().equals("timeToGo")) {
-			timeToGo.setText(((Duration) evt.getNewValue()).toString());
+			String ttg;
+			Duration onemillisecond = new Duration((float)0.001);
+			if(((Duration)evt.getNewValue()).lt(onemillisecond)){
+				ttg = "-";
+			}
+			else {
+				ttg = ((Duration)evt.getNewValue()).toString();
+			}
+			System.out.println(ttg);
+			timeToGo.setText(ttg);
 		}
 
 		if (evt.getPropertyName().equals("competitorsVersion")) {
 			((LeaderBoardTableModel) leaderBoardTable.getModel()).updateData();
+		}
+
+		if (evt.getPropertyName().equals("nationality")) {
+			((LeaderBoardTableModel) leaderBoardTable.getModel()).updateData();
+		}
+		
+		if (evt.getPropertyName().equals("addData")) {
+			((LeaderBoardTableModel) leaderBoardTable.getModel()).updateData();
+		}
+
+		if (evt.getPropertyName().equals("resetCount")) {
+			((LeaderBoardTableModel) leaderBoardTable.getModel()).removeAllRows();
 		}
 
 		if (evt.getPropertyName().equals("flagStatus")) {
@@ -319,9 +376,38 @@ public class MainFrame extends JFrame implements ActionListener
 			trackName.setText(evt.getNewValue().toString());
 		}
 
+		if (evt.getPropertyName().equals("lapsToGo")) {
+			String ltg = evt.getNewValue().toString();
+			if(ltg.compareTo("9999") == 0) {
+				ltg = "-";
+			}
+			lapsToGo.setText(ltg);
+		}
+
 		if (evt.getPropertyName().equals("trackLength")) {
 			// TODO: Handle Track Length
-			// trackLength.setText(evt.getNewValue().toString());
+			Object length = evt.getNewValue();
+			float lengthnum = (float)length;
+			String lengthstr;
+			
+			if(Float.compare(lengthnum, (float)0.0) == 0) {
+				lengthstr = "";
+			}
+			if(Float.compare(lengthnum, (float)1.0) == 0) {
+				lengthstr = "1km";
+			}
+			else if(Float.compare(lengthnum, (float)1.0) < 0) {
+				lengthnum *= 1000;
+				lengthstr = lengthnum + "m";
+			}
+			else if (Float.compare(lengthnum, (float)1.0) > 0) {
+				lengthstr = lengthnum + "km";
+			}
+			else {
+				lengthstr = "";
+			}
+		
+			trackLength.setText(lengthstr);
 		}
 	}
 }
