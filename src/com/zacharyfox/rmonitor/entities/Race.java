@@ -3,9 +3,11 @@ package com.zacharyfox.rmonitor.entities;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
+//import com.zacharyfox.rmonitor.leaderboard.LeaderBoardTableModel;
 import com.zacharyfox.rmonitor.message.ClassInfo;
 import com.zacharyfox.rmonitor.message.CompInfo;
 import com.zacharyfox.rmonitor.message.Heartbeat;
+import com.zacharyfox.rmonitor.message.InitRecord;
 import com.zacharyfox.rmonitor.message.LapInfo;
 import com.zacharyfox.rmonitor.message.PassingInfo;
 import com.zacharyfox.rmonitor.message.QualInfo;
@@ -20,6 +22,7 @@ public class Race
 	private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
 	private int competitorsVersion = 0;
+	private int resetCount = 0;
 	private Duration elapsedTime = new Duration();
 	private String flagStatus = "";
 	private int id = 0;
@@ -28,7 +31,7 @@ public class Race
 	private String name = "";
 	private Duration scheduledTime = new Duration();
 	private Duration timeOfDay = new Duration();
-	private Duration timeToGo = new Duration();
+	private Duration timeToGo = new Duration((float)0.001);
 	private Float trackLength = (float) 0.0;
 	private String trackName = "";
 
@@ -131,6 +134,16 @@ public class Race
 				RaceClass.update((ClassInfo) message);
 			} else if (message.getClass() == PassingInfo.class) {
 				Competitor.updateOrCreate(message);
+			} else if (message.getClass() == InitRecord.class) {
+				/* remove all rows from table */
+				setResetCount();
+				/* then remove competitors */
+				Competitor.reset();
+				
+				setName("-");
+				setId(0);
+				setTrackName("-");
+				setLapsToGo(0);
 			} else {
 				System.out.println(message);
 			}
@@ -166,7 +179,7 @@ public class Race
 			name = "";
 			scheduledTime = new Duration();
 			timeOfDay = new Duration();
-			timeToGo = new Duration();
+			timeToGo = new Duration((float)0.001);
 			trackLength = (float) 0.0;
 			trackName = "";
 
@@ -192,6 +205,12 @@ public class Race
 	{
 		this.competitorsVersion = this.competitorsVersion + 1;
 		changeSupport.firePropertyChange("competitorsVersion", this.competitorsVersion - 1, this.competitorsVersion);
+	}
+	
+	private void setResetCount()
+	{
+		this.resetCount = this.resetCount + 1;
+		changeSupport.firePropertyChange("resetCount", this.resetCount - 1, this.resetCount);
 	}
 
 	private void setElapsedTime(Duration elapsedTime)
