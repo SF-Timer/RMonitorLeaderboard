@@ -1,10 +1,13 @@
 package com.zacharyfox.rmonitor.leaderboard.frames;
 
+import java.awt.Font;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -22,6 +25,7 @@ public class ConnectFrame extends JFrame
 	{
 		getContentPane().setLayout(new MigLayout("", "[][grow]", "[][][]"));
 
+		
 		ipLabel = new JLabel("Scoreboard IP:");
 		ipLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		getContentPane().add(ipLabel, "cell 0 0,alignx trailing");
