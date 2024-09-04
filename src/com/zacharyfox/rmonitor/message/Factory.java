@@ -2,6 +2,7 @@ package com.zacharyfox.rmonitor.message;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
+import java.util.Objects;
 
 public abstract class Factory
 {
@@ -28,9 +29,11 @@ public abstract class Factory
 	@SuppressWarnings("unchecked")
 	public static <M extends RMonitorMessage> M getMessage(String line)
 	{
-		System.out.println(line);
 		// TODO: better tokenizing here - doesn't handle values with commas
 		String[] tokens = line.split(",");
+		if(!(Objects.equals(tokens[0], "$F"))) {
+			System.out.println(line);
+		}
 
 		for (int i = 0; i < tokens.length; i++) {
 			tokens[i] = tokens[i].replaceAll("\"", "");
