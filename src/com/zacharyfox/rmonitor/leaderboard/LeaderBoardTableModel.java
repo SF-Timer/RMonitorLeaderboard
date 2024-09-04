@@ -10,7 +10,7 @@ import com.zacharyfox.rmonitor.entities.RaceClass;
 public class LeaderBoardTableModel extends AbstractTableModel
 {
 	private String[] columnNames = new String[] {
-		"Pos", "PIC", "#", "Class", "Name", "Laps", "Total Time", "Last Time", "Best Time", "Avg. Time"
+		"Pos", "PIC", "#", "Class", "Name", "Nat", "Add", "Laps", "Total Time", "Last Time", "Best Time", "Avg. Time"
 	};
 
 	private ArrayList<Object[]> data = new ArrayList<Object[]>();
@@ -20,7 +20,7 @@ public class LeaderBoardTableModel extends AbstractTableModel
 	public LeaderBoardTableModel()
 	{
 		super();
-		data.add(new Object[]{"", "", "", "", "", "", "", "", "", ""});
+		data.add(new Object[]{"", "", "", "", "", "", "", "", "", "", "", ""});
 	}
 	
 	@Override
@@ -74,12 +74,24 @@ public class LeaderBoardTableModel extends AbstractTableModel
 		data = rows;
 		fireTableDataChanged();
 	}
+	
+	public void removeAllRows() {
+		int count = getRowCount();
+		
+		fireTableRowsDeleted(0,count-1);
+
+		ArrayList<Object[]> rows = new ArrayList<Object[]>();
+		for (@SuppressWarnings("unused") Competitor competitor : Competitor.getInstances().values()) {
+			rows.add(new Object[]{"", "", "", "", "", "", "", "", "", "", "", ""});
+		}
+		data = rows;
+	}
 
 	private Object[] getRow(Competitor competitor)
 	{
 		return new Object[] {
 			competitor.getPosition(), competitor.getPositionInClass(), competitor.getRegNumber(), RaceClass.getClassName(competitor.getClassId()),
-			competitor.getFirstName() + " " + competitor.getLastName(), competitor.getLapsComplete(),
+			competitor.getFirstName() + " " + competitor.getLastName(), competitor.getNationality(), competitor.getAddData(), competitor.getLapsComplete(),
 			competitor.getTotalTime(), competitor.getLastLap(), competitor.getBestLap(), competitor.getAvgLap(), ""
 		};
 	}
