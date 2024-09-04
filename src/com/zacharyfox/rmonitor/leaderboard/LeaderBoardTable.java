@@ -30,8 +30,8 @@ public class LeaderBoardTable extends JTable
 		Integer smallColumnSize = 40;
 		Integer timeColumnSize = 100;
 		
-		Integer[] smallColumns = {0, 1 , 2, 3, 5};
-		Integer[] timeColumns = {6, 7, 8, 9};
+		Integer[] smallColumns = {0, 1 , 2, 3, 7};
+		Integer[] timeColumns = {8, 9, 10, 11};
 		
 		for (Integer column : smallColumns) {
 			this.getColumnModel().getColumn(column).setPreferredWidth(smallColumnSize);
